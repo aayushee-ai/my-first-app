@@ -1,0 +1,966 @@
+```react
+import React, { useState, useEffect, useRef } from 'react';
+import { 
+  Camera, Upload, ShieldCheck, Leaf, AlertCircle, FileText, ShoppingBag, 
+  MapPin, TrendingUp, HelpCircle, PhoneCall, CheckCircle2, ChevronRight, 
+  Volume2, RefreshCw, Plus, Search, Filter, ArrowRight, User, Globe, 
+  Award, Clock, DollarSign, Calendar, Sparkles, Check, Info, X, Navigation,
+  ChevronDown, Layers, BarChart2, Shield, HeartHandshake, Package, AlertTriangle
+} from 'lucide-react';
+
+// ==========================================
+// TRANSLATIONS & DICTIONARY (9 Languages)
+// ==========================================
+const TRANSLATIONS = {
+  en: {
+    appName: "Kisan Connect",
+    tagline: "Empowering Every Farmer, Every Acre",
+    langName: "English",
+    welcome: "Welcome, Farmer Friend",
+    voiceAssistant: "Voice Guidance",
+    speakText: "Listening... How can Kisan Connect help you today?",
+    searchPlaceholder: "Search crops, mandis, fertilizers, complaints...",
+    quickNav: "All Services At Your Fingertips",
+    
+    // Cards / Modules
+    cropScanner: "AI Crop Health Scanner",
+    cropScannerSub: "Instant disease detection & remedies via photo",
+    assignedCrop: "Smart Crop Allocation",
+    assignedCropSub: "Assigned crop based on demand & soil rotation",
+    landRegistry: "Digital Land Registry",
+    landRegistrySub: "Verified parcel records & dispute prevention",
+    subsidyInsurance: "Crop Insurance & Subsidy",
+    subsidyInsuranceSub: "Claim compensation for crop failure",
+    mrpMarket: "Fixed Regional MRP & Mandi Rates",
+    mrpMarketSub: "Guaranteed fair price & market demand stats",
+    qualitySupplies: "Subsidized Quality Supplies",
+    qualitySuppliesSub: "Certified seeds & Urea based on income tier",
+    journeyLog: "Farm Journey Logbook",
+    journeyLogSub: "Strict step-by-step progress logging & proof",
+    complaints: "Grievance Redressal",
+    complaintsSub: "Direct complaint portal for fast resolution",
+
+    // Common Buttons & Labels
+    viewDetails: "View Details",
+    actionApply: "Apply Now",
+    actionScan: "Scan Crop Photo",
+    actionSubmit: "Submit Record",
+    actionBuy: "Order Now",
+    statusVerified: "Verified Owner",
+    statusPending: "Under Review",
+    statusApproved: "Approved & Disbursed",
+    incomeTier: "Income Tier",
+    subsidizedPrice: "Subsidized Price",
+    mrp: "Official MSP / MRP",
+    regionalMandi: "Nearest Mandi Rate",
+    liveDemand: "Market Demand Trend",
+    highDemand: "High Demand",
+    moderateDemand: "Moderate Demand",
+    
+    // Specific Modals / Texts
+    cropScannerTitle: "Crop Disease Scanner",
+    uploadPrompt: "Click or drag photo of affected leaf or stem",
+    scanBtnText: "Analyze Crop Health with AI",
+    analyzing: "Analyzing leaf pattern & symptom DB...",
+    scanResultHealthy: "Crop Health Status: HEALTHY (96% Confidence)",
+    scanResultIssue: "Detected: Leaf Blight (Alternaria Solani)",
+    remedyTitle: "Recommended Organic & Chemical Remedies",
+    remedy1: "Spray Copper Oxychloride 50% WP @ 2.5g/liter of water.",
+    remedy2: "Maintain proper drainage and remove infected bottom leaves.",
+    
+    assignedCropTitle: "Your Allocated Crop Plan (Season 2026)",
+    currentAllocated: "Allocated Crop: Yellow Soyabean (JS 335)",
+    allocationReason: "Allocated based on high regional deficit, optimal soil nitrogen index & 120-day weather forecast.",
+    marketGuarantee: "Guaranteed Buyer Procurement MRP: ₹5,120 / Quintal",
+    nextShuffle: "Next Crop Rotation Shuffle in: 110 Days (Target: Pulses/Chickpea)",
+
+    landRegistryTitle: "Digital Land Ownership Record (Bhoomi Ledger)",
+    parcelId: "Parcel Khasra ID",
+    ownerName: "Owner Name",
+    areaAcres: "Total Area",
+    gpsCoords: "GPS Location",
+    disputeStatus: "Dispute Clear Status",
+    viewMap: "View Geotagged Map",
+
+    subsidyTitle: "Government Crop Loss Compensation Claim",
+    claimReason: "Reason for Crop Failure",
+    drought: "Drought / Lack of Rainfall",
+    unseasonalRain: "Unseasonal Rain / Hailstorm",
+    pestAttack: "Severe Pest Infestation",
+    diseaseOutbreak: "Uncontrollable Disease",
+    estimatedLoss: "Estimated Area Damaged (Acres)",
+    calculatedSubsidy: "Calculated Fair Subsidy Amount",
+    submitClaim: "File Verified Claim",
+
+    suppliesTitle: "Certified Agri-Inputs & Fertilizers Portal",
+    smallFarmerDiscount: "Small Farmer (Income < ₹1.5L/yr) - 60% Subsidy Applied",
+    orderSuccess: "Order placed successfully! OTP for delivery sent to registered mobile.",
+
+    logbookTitle: "Mandatory Farm Journey Logbook",
+    logNotice: "Posting timely photos of sowing, fertilizer & harvest is required to qualify for MSP guarantees & insurance claims.",
+    addStage: "Log New Farming Activity",
+    
+    complaintTitle: "Farmer Support & Grievance Portal",
+    complaintCat: "Complaint Category",
+    mandiFraud: "Mandi Price Manipulation / Middlemen Issue",
+    seedQuality: "Substandard Seed / Adulterated Fertilizer",
+    waterPower: "Irrigation Canal / Power Supply Dispute",
+    landDispute: "Encroachment or Land Boundary Dispute",
+    complaintDesc: "Describe your grievance in detail...",
+    raiseTicket: "Register Complaint & Get Tracking ID",
+
+    noData: "No records found.",
+    close: "Close"
+  },
+  hi: {
+    appName: "किसान कनेक्ट",
+    tagline: "हर किसान का साथी, हर खेत की प्रगति",
+    langName: "हिंदी",
+    welcome: "स्वागत है, किसान भाई",
+    voiceAssistant: "आवाज़ सहायता",
+    speakText: "सुन रहे हैं... आज किसान कनेक्ट आपकी क्या सहायता कर सकता है?",
+    searchPlaceholder: "फसल, मंडी भाव, खाद, शिकायत खोजें...",
+    quickNav: "सभी मुख्य सेवाएं एक ही स्थान पर",
+
+    cropScanner: "AI फसल स्वास्थ्य स्कैनर",
+    cropScannerSub: "फोटो द्वारा त्वरित बीमारी पहचान और उपचार",
+    assignedCrop: "स्मार्ट फसल आवंटन",
+    assignedCropSub: "मांग और मिट्टी चक्र के अनुसार फसल आवंटन",
+    landRegistry: "डिजिटल भूमि स्वामित्व रिकॉर्ड",
+    landRegistrySub: "सत्यापित खसरा और विवाद-मुक्त प्रमाण",
+    subsidyInsurance: "फसल बीमा व क्षतिपूर्ति सब्सिडी",
+    subsidyInsuranceSub: "फसल खराब होने पर तुरंत निष्पक्ष मुआवजा",
+    mrpMarket: "निश्चित क्षेत्रीय MRP व मंडी भाव",
+    mrpMarketSub: "गारंटीकृत समर्थन मूल्य और बाजार मांग जानकारी",
+    qualitySupplies: "आय-आधारित रियायती खाद व बीज",
+    qualitySuppliesSub: "आपकी आय वर्ग अनुसार सब्सिडीयुक्त यूरिया व बीज",
+    journeyLog: "कृषि यात्रा लॉगबुक",
+    journeyLogSub: "सत्यापित चरणबद्ध खेती प्रमाण और फोटो लॉग",
+    complaints: "किसान शिकायत निवारण",
+    complaintsSub: "मंडी, खाद या बिजली समस्याओं की त्वरित सुनवाई",
+
+    viewDetails: "विवरण देखें",
+    actionApply: "आवेदन करें",
+    actionScan: "फसल फोटो स्कैन करें",
+    actionSubmit: "जमा करें",
+    actionBuy: "ऑर्डर करें",
+    statusVerified: "सत्यापित स्वामी",
+    statusPending: "जांच जारी",
+    statusApproved: "स्वीकृत व राशि स्थानांतरित",
+    incomeTier: "आय श्रेणी",
+    subsidizedPrice: "छूट प्राप्त मूल्य",
+    mrp: "सरकारी न्यूनतम समर्थन मूल्य (MSP)",
+    regionalMandi: "निकटतम मंडी भाव",
+    liveDemand: "बाजार मांग स्थिति",
+    highDemand: "उच्च मांग",
+    moderateDemand: "सामान्य मांग",
+
+    cropScannerTitle: "AI फसल रोग स्कैनर",
+    uploadPrompt: "प्रभावित पत्ती या तने की फोटो अपलोड करें",
+    scanBtnText: "AI से फसल स्वास्थ्य जांचें",
+    analyzing: "लक्षणों का विश्लेषण किया जा रहा है...",
+    scanResultHealthy: "फसल स्थिति: स्वस्थ (96% सटीकता)",
+    scanResultIssue: "पहचाना गया रोग: अगेती झुलसा (Leaf Blight)",
+    remedyTitle: "अनुशंसित जैविक व रासायनिक उपचार",
+    remedy1: "कॉपर ऑक्सीक्लोराइड 50% WP का 2.5 ग्राम/लीटर पानी में छिड़काव करें।",
+    remedy2: "खेत में जल निकासी सुधारें और निचली संक्रमित पत्तियों को हटा दें।",
+
+    assignedCropTitle: "आपकी आवंटित फसल योजना (सीजन 2026)",
+    currentAllocated: "आवंटित फसल: पीली सोयाबीन (JS 335)",
+    allocationReason: "क्षेत्रीय मांग, मिट्टी की गुणवत्ता और 120 दिनों के मौसम पूर्वानुमान के अनुसार चयनित।",
+    marketGuarantee: "गारंटीकृत सरकारी खरीद मूल्य: ₹5,120 / क्विंटल",
+    nextShuffle: "अगला फसल चक्र बदलाव: 110 दिनों में (लक्ष्य: दलहन/चना)",
+
+    landRegistryTitle: "डिजिटल भूमि स्वामित्व रिकॉर्ड (भूमि लेजर)",
+    parcelId: "खसरा / खाता संख्या",
+    ownerName: "भूमि स्वामी",
+    areaAcres: "कुल क्षेत्रफल",
+    gpsCoords: "GPS स्थान",
+    disputeStatus: "विवाद स्थिति",
+    viewMap: "जियो-टैग नक्शा देखें",
+
+    subsidyTitle: "सरकारी फसल नुकसान क्षतिपूर्ति सब्सिडी",
+    claimReason: "फसल नुकसान का कारण",
+    drought: "सूखा / वर्षा की कमी",
+    unseasonalRain: "बेमौसम बारिश / ओलावृष्टि",
+    pestAttack: "गंभीर कीट प्रकोप",
+    diseaseOutbreak: "नियंत्रण से बाहर बीमारी",
+    estimatedLoss: "प्रभावित क्षेत्रफल (एकड़)",
+    calculatedSubsidy: "अनुमानित सहायता राशि",
+    submitClaim: "दावा दर्ज करें",
+
+    suppliesTitle: "उत्कृष्ट खाद व प्रमाणित बीज पोर्टल",
+    smallFarmerDiscount: "छोटे किसान (आय < ₹1.5 लाख/वर्ष) - 60% सब्सिडी लागू",
+    orderSuccess: "ऑर्डर सफलतापूर्वक दर्ज हुआ! डिलीवरी OTP रजिस्टर्ड मोबाइल पर भेजा गया।",
+
+    logbookTitle: "अनिवार्य कृषि यात्रा लॉगबुक",
+    logNotice: "न्यूनतम समर्थन मूल्य और बीमा मुआवजे हेतु बुआई व सिंचाई के फोटो प्रमाण अपलोड करना अनिवार्य है।",
+    addStage: "नया कृषि चरण जोड़ें",
+
+    complaintTitle: "किसान सहायता व शिकायत निवारण",
+    complaintCat: "शिकायत की श्रेणी",
+    mandiFraud: "मंडी में कम दाम / बिचौलियों की समस्या",
+    seedQuality: "नकली बीज / मिलावटी यूरिया",
+    waterPower: "नहर का पानी / बिजली आपूर्ति विवाद",
+    landDispute: "भूमि अतिक्रमण या सीमा विवाद",
+    complaintDesc: "अपनी समस्या विस्तार से लिखें...",
+    raiseTicket: "शिकायत दर्ज करें व टोकन नंबर प्राप्त करें",
+
+    noData: "कोई रिकॉर्ड नहीं मिला।",
+    close: "बंद करें"
+  },
+  pb: {
+    appName: "ਕਿਸਾਨ ਕਨੈਕਟ",
+    tagline: "ਹਰ ਕਿਸਾਨ ਦੀ ਸ਼ਾਨ, ਹਰ ਖੇਤ ਦਾ ਮਾਨ",
+    langName: "ਪੰਜਾਬੀ",
+    welcome: "ਜੀ ਆਇਆਂ ਨੂੰ, ਕਿਸਾਨ ਵੀਰੋ",
+    voiceAssistant: "ਆਵਾਜ਼ ਸਹਾਇਤਾ",
+    speakText: "ਸੁਣ ਰਹੇ ਹਾਂ... ਕਿਸਾਨ ਕਨੈਕਟ ਅੱਜ ਤੁਹਾਡੀ ਕੀ ਮਦਦ ਕਰ ਸਕਦਾ ਹੈ?",
+    searchPlaceholder: "ਫ਼ਸਲ, ਮੰਡੀ ਭਾਅ, ਖਾਦ, ਸ਼ਿਕਾਇਤ ਖੋਜੋ...",
+    quickNav: "ਸਾਰੀਆਂ ਮੁੱਖ ਸੇਵਾਵਾਂ ਤੁਹਾਡੇ ਹੱਥ ਵਿੱਚ",
+
+    cropScanner: "AI ਫ਼ਸਲ ਸਿਹਤ ਸਕੈਨਰ",
+    cropScannerSub: "ਫੋਟੋ ਤੋਂ ਬਿਮਾਰੀ ਦੀ ਤੁਰੰਤ ਪਛਾਣ ਅਤੇ ਇਲਾਜ",
+    assignedCrop: "ਸਮਾਰਟ ਫ਼ਸਲ ਵੰਡ",
+    assignedCropSub: "ਮੰਗ ਅਤੇ ਮਿੱਟੀ ਦੀ ਗੁਣਵੱਤਾ ਅਨੁਸਾਰ ਫ਼ਸਲ ਵੰਡ",
+    landRegistry: "ਡਿਜੀਟਲ ਜ਼ਮੀਨ ਰਿਕਾਰਡ",
+    landRegistrySub: "ਪ੍ਰਮਾਣਿਤ ਖਸਰਾ ਨੰਬਰ ਅਤੇ ਜ਼ਮੀਨ ਵਿਵਾਦ ਮੁਕਤੀ",
+    subsidyInsurance: "ਫ਼ਸਲੀ ਬੀਮਾ ਅਤੇ ਸਬਸਿਡੀ",
+    subsidyInsuranceSub: "ਫ਼ਸਲ ਖਰਾਬ ਹੋਣ ਤੇ ਤੁਰੰਤ ਮੁਆਵਜ਼ਾ",
+    mrpMarket: "ਨਿਸ਼ਚਿਤ ਮੰਡੀ ਭਾਅ (MSP)",
+    mrpMarketSub: "ਗਾਰੰਟੀਸ਼ੁਦਾ ਰੇਟ ਅਤੇ ਬਜ਼ਾਰ ਮੰਗ ਜਾਣਕਾਰੀ",
+    qualitySupplies: "ਸਬਸਿਡੀ ਵਾਲੀ ਖਾਦ ਅਤੇ ਬੀਜ",
+    qualitySuppliesSub: "ਆਮਦਨ ਅਨੁਸਾਰ ਸਰਕਾਰੀ ਯੂਰੀਆ ਅਤੇ ਉੱਤਮ ਬੀਜ",
+    journeyLog: "ਖੇਤੀ ਯਾਤਰਾ ਲੌਗਬੁੱਕ",
+    journeyLogSub: "ਬੀਜਣ ਤੋਂ ਵਾਢੀ ਤੱਕ ਫੋਟੋ ਸਬੂਤ ਲੌਗ",
+    complaints: "ਕਿਸਾਨ ਸ਼ਿਕਾਇਤ ਪੋਰਟਲ",
+    complaintsSub: "ਮੰਡੀ, ਪਾਣੀ, ਬਿਜਲੀ ਮਸਲਿਆਂ ਦੀ ਤੁਰੰਤ ਸੁਣਵਾਈ",
+
+    viewDetails: "ਵੇਰਵਾ ਦੇਖੋ",
+    actionApply: "ਅਪਲਾਈ ਕਰੋ",
+    actionScan: "ਫ਼ਸਲ ਦੀ ਫੋਟੋ ਸਕੈਨ ਕਰੋ",
+    actionSubmit: "ਜਮ੍ਹਾਂ ਕਰੋ",
+    actionBuy: "ਆਰਡਰ ਕਰੋ",
+    statusVerified: "ਪ੍ਰਮਾਣਿਤ ਮਾਲਕ",
+    statusPending: "ਜਾਂਚ ਅਧੀਨ",
+    statusApproved: "ਮਨਜ਼ੂਰ ਅਤੇ ਪੈਸੇ ਭੇਜੇ ਗਏ",
+    incomeTier: "ਆਮਦਨ ਵਰਗ",
+    subsidizedPrice: "ਸਬਸਿਡੀ ਵਾਲਾ ਰੇਟ",
+    mrp: "ਸਰਕਾਰੀ ਐਮ.ਐਸ.ਪੀ. (MSP)",
+    regionalMandi: "ਨੇੜਲੀ ਮੰਡੀ ਦਾ ਭਾਅ",
+    liveDemand: "ਬਜ਼ਾਰ ਦੀ ਮੰਗ",
+    highDemand: "ਬਹੁਤ ਮੰਗ",
+    moderateDemand: "ਆਮ ਮੰਗ",
+
+    cropScannerTitle: "AI ਫ਼ਸਲ ਬਿਮਾਰੀ ਸਕੈਨਰ",
+    uploadPrompt: "ਬਿਮਾਰ ਪੱਤੇ ਦੀ ਫੋਟੋ ਅਪਲੋਡ ਕਰੋ",
+    scanBtnText: "AI ਨਾਲ ਫ਼ਸਲ ਦੀ ਜਾਂਚ ਕਰੋ",
+    analyzing: "ਫ਼ਸਲ ਦੀ ਬਿਮਾਰੀ ਦੀ ਜਾਂਚ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...",
+    scanResultHealthy: "ਫ਼ਸਲ ਦੀ ਸਥਿਤੀ: ਬਿਲਕੁਲ ਠੀਕ (96%)",
+    scanResultIssue: "ਪਛਾਣੀ ਗਈ ਬਿਮਾਰੀ: ਪੱਤਾ ਝੁਲਸ (Leaf Blight)",
+    remedyTitle: "ਸੁਝਾਏ ਗਏ ਇਲਾਜ",
+    remedy1: "ਕੌਪਰ ਆਕਸੀਕਲੋਰਾਈਡ 50% WP ਦਾ 2.5 ਗ੍ਰਾਮ ਪ੍ਰਤੀ ਲੀਟਰ ਛਿੜਕਾਅ ਕਰੋ।",
+    remedy2: "ਖੇਤ ਵਿੱਚ ਪਾਣੀ ਖੜ੍ਹਾ ਨਾ ਹੋਣ ਦਿਓ।",
+
+    assignedCropTitle: "ਤੁਹਾਡੀ ਫ਼ਸਲ ਯੋਜਨਾ (2026)",
+    currentAllocated: "ਮਨਜ਼ੂਰਸ਼ੁਦਾ ਫ਼ਸਲ: ਪੀਲੀ ਸੋਇਆਬੀਨ",
+    allocationReason: "ਮੰਗ ਅਤੇ ਮਿੱਟੀ ਦੀ ਸਿਹਤ ਦੇ ਆਧਾਰ 'ਤੇ ਚੁਣੀ ਗਈ।",
+    marketGuarantee: "ਗਾਰੰਟੀਸ਼ੁਦਾ ਸਰਕਾਰੀ ਖਰੀਦ ਭਾਅ: ₹5,120 / ਕੁਇੰਟਲ",
+    nextShuffle: "ਅਗਲਾ ਫ਼ਸਲੀ ਚੱਕਰ: 110 ਦਿਨਾਂ ਵਿੱਚ",
+
+    landRegistryTitle: "ਡਿਜੀਟਲ ਜ਼ਮੀਨ ਮਲਕੀਅਤ ਰਿਕਾਰਡ",
+    parcelId: "ਖਸਰਾ ਨੰਬਰ",
+    ownerName: "ਜ਼ਮੀਨ ਮਾਲਕ",
+    areaAcres: "ਕੁੱਲ ਰਕਬਾ",
+    gpsCoords: "GPS ਲੋਕੇਸ਼ਨ",
+    disputeStatus: "ਵਿਵਾਦ ਸਥਿਤੀ",
+    viewMap: "ਨਕਸ਼ਾ ਦੇਖੋ",
+
+    subsidyTitle: "ਫ਼ਸਲ ਨੁਕਸਾਨ ਮੁਆਵਜ਼ਾ ਸਬਸਿਡੀ",
+    claimReason: "ਨੁਕਸਾਨ ਦਾ ਕਾਰਨ",
+    drought: "ਸੂਖਾ / ਘੱਟ ਮੀਂਹ",
+    unseasonalRain: "ਬੇਮੌਸਮੀ ਮੀਂਹ / ਓਲੇ",
+    pestAttack: "ਕੀੜਿਆਂ ਦਾ ਹਮਲਾ",
+    diseaseOutbreak: "ਬਿਮਾਰੀ",
+    estimatedLoss: "ਨੁਕਸਾਨਿਆ ਰਕਬਾ (ਏਕੜ)",
+    calculatedSubsidy: "ਬਣਦਾ ਮੁਆਵਜ਼ਾ",
+    submitClaim: "ਦਾਅਵਾ ਦਰਜ ਕਰੋ",
+
+    suppliesTitle: "ਖਾਦ ਅਤੇ ਬੀਜ ਪੋਰਟਲ",
+    smallFarmerDiscount: "ਛੋਟੇ ਕਿਸਾਨ - 60% ਸਬਸਿਡੀ ਲਾਗੂ",
+    orderSuccess: "ਆਰਡਰ ਸਫਲਤਾਪੂਰਵਕ ਦਰਜ ਹੋਇਆ!",
+
+    logbookTitle: "ਖੇਤੀ ਯਾਤਰਾ ਲੌਗਬੁੱਕ",
+    logNotice: "ਸਰਕਾਰੀ ਖਰੀਦ ਅਤੇ ਬੀਮੇ ਲਈ ਫੋਟੋ ਅਪਲੋਡ ਕਰਨਾ ਜ਼ਰੂਰੀ ਹੈ।",
+    addStage: "ਨਵਾਂ ਲੌਗ ਜੋੜੋ",
+
+    complaintTitle: "ਕਿਸਾਨ ਸ਼ਿਕਾਇਤ ਪੋਰਟਲ",
+    complaintCat: "ਸ਼ਿਕਾਇਤ ਦੀ ਕਿਸਮ",
+    mandiFraud: "ਮੰਡੀ ਵਿੱਚ ਘੱਟ ਭਾਅ / ਵਿਚੋਲੇ",
+    seedQuality: "ਨਕਲੀ ਬੀਜ / ਖਾਦ",
+    waterPower: "ਨਹਿਰੀ ਪਾਣੀ / ਬਿਜਲੀ ਦੀ ਸਮੱਸਿਆ",
+    landDispute: "ਜ਼ਮੀਨ ਦਾ ਕਬਜ਼ਾ / ਝਗੜਾ",
+    complaintDesc: "ਆਪਣੀ ਸਮੱਸਿਆ ਲਿਖੋ...",
+    raiseTicket: "ਸ਼ਿਕਾਇਤ ਦਰਜ ਕਰੋ",
+
+    noData: "ਕੋਈ ਰਿਕਾਰਡ ਨਹੀਂ ਮਿਲਿਆ।",
+    close: "ਬੰਦ ਕਰੋ"
+  },
+  mr: { appName: "किसान कनेक्ट", tagline: "प्रत्येक शेतकऱ्याचा पाठीराखा", langName: "मराठी", welcome: "नमस्कार शेतकरी मित्रानो", voiceAssistant: "आवाज मार्गदर्शन", searchPlaceholder: "पिके, बाजार भाव, खते, तक्रार शोधा...", quickNav: "सर्व सेवा एकाच ठिकाणी", cropScanner: "AI पीक आरोग्य स्कॅनर", cropScannerSub: "फोटोद्वारे रोगाचे त्वरित निदान व उपाय", assignedCrop: "स्मार्ट पीक नियोजन", assignedCropSub: "मागणी व जमिनीनुसार पीक वाटप", landRegistry: "डिजिटल जमीन सातबारा नोंद", landRegistrySub: "प्रमाणित गट क्रमांक व वादमुक्त नोंद", subsidyInsurance: "पीक विमा व सबसिडी", subsidyInsuranceSub: "पीक नुकसानीवर त्वरित भरपाई", mrpMarket: "हमीभाव व बाजार भाव", mrpMarketSub: "शासकीय हमीभाव व थेट बाजार भाव", qualitySupplies: "अनुदानित खते व बियाणे", qualitySuppliesSub: "उत्पन्नानुसार सवलतीच्या दरात खते", journeyLog: "शेती प्रवास नोंदवही", journeyLogSub: "पेरणी ते कापणी फोटो पुरावा नोंद", complaints: "शेतकरी तक्रार निवारण", complaintsSub: "बाजार, पाणी किंवा वीज तक्रार नोंदवा", viewDetails: "तपशील पहा", actionApply: "अर्ज करा", actionScan: "पीक फोटो स्कॅन करा", actionSubmit: "सादर करा", actionBuy: "ऑर्डर करा", statusVerified: "प्रमाणित मालक", statusPending: "तपासणी सुरू", statusApproved: "मंजूर व रक्कम वर्ग", incomeTier: "उत्पन्न गट", subsidizedPrice: "अनुदानित दर", mrp: "शासकीय हमीभाव (MSP)", regionalMandi: "जवळची बाजार समिती दर", liveDemand: "बाजार मागणी", highDemand: "जबाबदार मागणी", moderateDemand: "मध्यम मागणी", cropScannerTitle: "AI पीक रोग स्कॅनर", uploadPrompt: "बाधित पानाचा किंवा खोडाचा फोटो अपलोड करा", scanBtnText: "AI द्वारे पीक तपासा", analyzing: "तपासणी सुरू आहे...", scanResultHealthy: "पीक स्थिती: निरोगी (96%)", scanResultIssue: "आढळलेला रोग: करपा (Leaf Blight)", remedyTitle: "शिफारस केलेले उपाय", remedy1: "कॉपर ऑक्सिक्लोराईड 50% WP २.५ ग्रॅम/लीटर पाण्यात मिसळून फवारा.", remedy2: "शेतात पाणी साचू देऊ नका.", assignedCropTitle: "तुमचे पीक वाटप नियोजन (२०२६)", currentAllocated: "वाटप केलेले पीक: सोयाबीन (JS 335)", allocationReason: "बाजार मागणी आणि मातीच्या गुणधर्मानुसार निवडलेले.", marketGuarantee: "हमीभाव शासकीय खरेदी दर: ₹५,१२० / क्विं", nextShuffle: "पुढील पीक बदल: ११० दिवसांत", landRegistryTitle: "डिजिटल सातबारा व जमीन नोंद", parcelId: "गट / सर्व्हे क्रमांक", ownerName: "जमीन मालक", areaAcres: "एकूण क्षेत्र (एकड)", gpsCoords: "GPS स्थान", disputeStatus: "वाद स्थिती", viewMap: "नकाशा पहा", subsidyTitle: "पीक नुकसान भरपाई सबसिडी", claimReason: "नुकसानीचे कारण", drought: "दुष्काळ / पावसाचा ताण", unseasonalRain: "अवकाळी पाऊस / गारपीट", pestAttack: "किडींचा प्रादुर्भाव", diseaseOutbreak: "रोगराई", estimatedLoss: "बाधित क्षेत्र (एकड)", calculatedSubsidy: "अनुमानित भरपाई रक्कम", submitClaim: "दावा दाखल करा", suppliesTitle: "प्रमाणित बियाणे व खत पोर्टल", smallFarmerDiscount: "लहान शेतकरी - ६०% अनुदान लागू", orderSuccess: "ऑर्डर यशस्वी झाली!", logbookTitle: "शेती प्रवास नोंदवही", logNotice: "हमीभाव आणि विम्यासाठी फोटो अपलोड करणे बंधनकारक आहे.", addStage: "नवीन नोंद जोडा", complaintTitle: "तक्रार निवारण मंच", complaintCat: "तक्रार प्रकार", mandiFraud: "बाजार समितीत कमी दर / मध्यस्थ", seedQuality: "बोगस बियाणे / भेसळयुक्त खते", waterPower: "कालवा पाणी / वीज समस्या", landDispute: "जमीन अतिक्रमण / वाद", complaintDesc: "तक्रार सविस्तर लिहा...", raiseTicket: "तक्रार नोंदवा", noData: "माहिती उपलब्ध नाही.", close: "बंद करा" },
+  te: { appName: "కిసాన్ కనెక్ట్", tagline: "రైతు సంక్షేమమే మా ధ్యేయం", langName: "తెలుగు", welcome: "స్వాగతం రైతు సోదరా", voiceAssistant: "వాయిస్ మార్గదర్శి", searchPlaceholder: "పంటలు, మార్కెట్ ధరలు, ఎరువులు...", quickNav: "అన్ని సేవలు మీ వేలిముద్రలపై", cropScanner: "AI పంట ఆరోగ్య స్కేనర్", cropScannerSub: "ఫోటో ద్వారా వ్యాధి గుర్తింపు మరియు నివారణ", assignedCrop: "స్మార్ట్ పంట కేటాయింపు", assignedCropSub: "డిమాండ్ ఆధారంగా పంటల ఎంపిక", landRegistry: "డిజిటల్ భూమి రికార్డులు", landRegistrySub: "సర్వే నంబర్ మరియు వివాద రహిత ధృవీకరణ", subsidyInsurance: "పంట బీమా & సబ్సిడీ", subsidyInsuranceSub: "పంట నష్ట పరిహారం తక్షణమే పొందే వెసులుబాటు", mrpMarket: "కనీస మద్దతు ధర (MSP)", mrpMarketSub: "గ్యారంటీ ధరలు మరియు మార్కెట్ సమాచారం", qualitySupplies: "సబ్సిడీ ఎరువులు & విత్తనాలు", qualitySuppliesSub: "ఆదాయ పరిమితి ఆధారంగా ఎరువుల పంపిణీ", journeyLog: "వ్యవసాయ పురోగతి రికార్డు", journeyLogSub: "విత్తనం నుండి కోత వరకు ఫోటో సాక్ష్యాలు", complaints: "రైతు ఫిర్యాదుల పోర్టల్", complaintsSub: "మార్కెట్, విద్యుత్, విత్తనాల సమస్యలపై ఫిర్యాదు", viewDetails: "వివరాలు చూడండి", actionApply: "దరఖాస్తు చేయండి", actionScan: "ఫోటో స్కాన్ చేయండి", actionSubmit: "సమర్పించండి", actionBuy: "ఆర్డర్ చేయండి", statusVerified: "ధృవీకరించబడిన యజమాని", statusPending: "పరిశీలనలో ఉంది", statusApproved: "మంజూరైంది", incomeTier: "ఆదాయ వర్గం", subsidizedPrice: "సబ్సిడీ ధర", mrp: "ప్రభుత్వ మద్దతు ధర (MSP)", regionalMandi: "సమీప మార్కెట్ ధర", liveDemand: "మార్కెట్ డిమాండ్", highDemand: "ఎక్కువ డిమాండ్", moderateDemand: "సాధారణ డిమాండ్", cropScannerTitle: "AI పంట వ్యాధి స్కేనర్", uploadPrompt: "వ్యాధి ఉన్న ఆకు ఫోటో అప్‌లోడ్ చేయండి", scanBtnText: "AI ద్వారా పరీక్షించండి", analyzing: "విశ్లేషిస్తోంది...", scanResultHealthy: "పంట స్థితి: ఆరోగ్యకరమైనది (96%)", scanResultIssue: "గుర్తించిన వ్యాధి: ఆకు మచ్చ తెగులు", remedyTitle: "సూచించిన నివారణ చర్యలు", remedy1: "కాపర్ ఆక్సిక్లోరైడ్ 2.5 గ్రా/లీటర్ నీటిలో కలిపి పిచికారీ చేయండి.", remedy2: "పొలంలో నీరు నిల్వ ఉండకుండా చూడండి.", assignedCropTitle: "మీ పంట ప్రణాళిక (2026)", currentAllocated: "కేటాయించిన పంట: సోయాబీన్", allocationReason: "మట్టి రకం మరియు మార్కెట్ డిమాండ్ ఆధారంగా కేటాయించబడింది.", marketGuarantee: "ప్రభుత్వ కొనుగోలు మద్దతు ధర: ₹5,120 / క్వింటాల్", nextShuffle: "తరువాతి పంట మార్పిడి: 110 రోజుల్లో", landRegistryTitle: "డిజిటల్ భూ యాజమాన్య రికార్డు", parcelId: "పాసుబుక్ / సర్వే నంబర్", ownerName: "భూమి యజమాని", areaAcres: "మొత్తం వైశాల్యం (ఎకరాలు)", gpsCoords: "GPS ప్రదేశం", disputeStatus: "వివాదాల స్థితి", viewMap: "మ్యాప్ చూడండి", subsidyTitle: "పంట నష్ట పరిహార సబ్సిడీ", claimReason: "నష్టానికి కారణం", drought: "కరువు / వర్షాభావం", unseasonalRain: "అకాల వర్షాలు", pestAttack: "పురుగుల దాడి", diseaseOutbreak: "తెగుళ్లు", estimatedLoss: "నష్టపోయిన విస్తీర్ణం", calculatedSubsidy: "అంచనా సబ్సిడీ మొత్తం", submitClaim: "క్లెయిమ్ దాఖలు చేయండి", suppliesTitle: "నాణ్యమైన విత్తనాలు & ఎరువులు", smallFarmerDiscount: "చిన్న రైతులు - 60% సబ్సిడీ వర్తిస్తుంది", orderSuccess: "ఆర్డర్ విజయవంతమైంది!", logbookTitle: "వ్యవసాయ పురోగతి రికార్డు", logNotice: "మద్దతు ధర మరియు బీమా కోసం ఫోటో సాక్ష్యం తప్పనిసరి.", addStage: "కొత్త రికార్డు జోడించండి", complaintTitle: "రైతు ఫిర్యాదుల వేదిక", complaintCat: "ఫిర్యాదు వర్గం", mandiFraud: "మార్కెట్లో తక్కువ ధర / మధ్యవర్తులు", seedQuality: "నకిలీ విత్తనాలు / ఎరువులు", waterPower: "నీటి పారుదల / విద్యుత్ సమస్యలు", landDispute: "భూమి ఆక్రమణ", complaintDesc: "మీ సమస్యను వివరించండి...", raiseTicket: "ఫిర్యాదు నమోదు చేయండి", noData: "డేటా అందుబాటులో లేదు.", close: "మూసివేయి" },
+  ta: { appName: "கிசான் கனெக்ட்", tagline: "விவசாயಿಗಳ தோழன்", langName: "தமிழ்", welcome: "வணக்கம் விவசாய சகோதரரே", voiceAssistant: "குரல் வழிகாட்டி", searchPlaceholder: "பயிர்கள், சந்தை விலை, உரங்கள்...", quickNav: "அனைத்து சேவைகளும் உங்கள் கையில்", cropScanner: "AI பயிர் ఆరోగ్య ஸ்கேனர்", cropScannerSub: "புகைப்படம் மூலம் நோய் கண்டறிதல் & தீர்வு", assignedCrop: "ஸ்மார்ட் பயிர் ஒதுக்கீடு", assignedCropSub: "தேவைக்கேற்ப பயிர் சுழற்சி திட்டம்", landRegistry: "டிஜிட்டல் நில விவரம்", landRegistrySub: "பட்டா & நில தகராறு அற்ற சான்றிதழ்", subsidyInsurance: "பயிர் காப்பீடு & மானியம்", subsidyInsuranceSub: "பயிர் இழப்பிற்கு உடனடி நிவாரணம்", mrpMarket: "அரசு குறைந்தபட்ச ஆதரவு விலை", mrpMarketSub: "உத்தரவாத விலை & சந்தை நிலவரம்", qualitySupplies: "மானிய உரங்கள் & விதைகள்", qualitySuppliesSub: "வருமான வரம்பிற்கு ஏற்ப மானிய உரங்கள்", journeyLog: "விவசாய பயண பதிவேடு", journeyLogSub: "விதைப்பு முதல் அறுவடை வரை ஆதார பதிவு", complaints: "விவசாயி குறைதீர்க்கும் மையம்", complaintsSub: "சந்தை, மின்சாரம், உரம் பிரச்சனைகளுக்கு தீர்வு", viewDetails: "விவரங்களை காண்க", actionApply: "விண்ணப்பிக்கவும்", actionScan: "பயிர் படம் ஸ்கேன் செய்க", actionSubmit: "சமர்ப்பிக்கவும்", actionBuy: "ஆர்டர் செய்க", statusVerified: "உறுதிசெய்யப்பட்ட உரிமையாளர்", statusPending: "பரிசீலனையில் ఉంది", statusApproved: "ஒப்புதலளிக்கப்பட்டது", incomeTier: "வருமான பிரிவு", subsidizedPrice: "மானிய விலை", mrp: "அரசு ஆதரவு விலை (MSP)", regionalMandi: "அருகிலுள்ள சந்தை விலை", liveDemand: "சந்தை தேவை", highDemand: "அதிக தேவை", moderateDemand: "மிதமான தேவை", cropScannerTitle: "AI பயிர் நோய் ஸ்கேனர்", uploadPrompt: "பாதிக்கப்பட்ட இலையின் படத்தை பதிவேற்றவும்", scanBtnText: "AI மூலம் பரிசோதிக்கவும்", analyzing: "பரிசோதிக்கப்படுகிறது...", scanResultHealthy: "பயிர் நிலை: ஆரோக்கியமானது (96%)", scanResultIssue: "கண்டறியப்பட்ட நோய்: இலை கருகல் நோய்", remedyTitle: "பரிந்துரைக்கப்பட்ட தீர்வுகள்", remedy1: "காப்பர் ஆக்சிகுளோரைடு 2.5 கிராம்/லிட்டர் தண்ணீரில் கலந்து தெளிக்கவும்.", remedy2: "வயலில் தண்ணீர் தேங்காமல் பார்த்துக்கொள்ளவும்.", assignedCropTitle: "உங்கள் பயிர் திட்டம் (2026)", currentAllocated: "ஒதுக்கப்பட்ட பயிர்: சோயாபீன்ஸ்", allocationReason: "மண் வளம் மற்றும் சந்தை தேவைக்கேற்ப ஒதுக்கப்பட்டது.", marketGuarantee: "அரசு கொள்முதல் விலை: ₹5,120 / குவிண்டால்", nextShuffle: "அடுத்த பயிர் சுழற்சி: 110 நாட்களில்", landRegistryTitle: "டிஜிட்டல் நில உரிமை பதிவேடு", parcelId: "பட்டா / சர்வே எண்", ownerName: "நில உரிமையாளர்", areaAcres: "மொத்த பரப்பு (ஏக்கர்)", gpsCoords: "GPS இருப்பிடம்", disputeStatus: "தகராறு நிலை", viewMap: "வரைபடம் காண்க", subsidyTitle: "பயிர் சேத இழப்பீட்டு மானியம்", claimReason: "சேதத்திற்கான காரணம்", drought: "வறட்சி", unseasonalRain: "பருவம் தப்பிய மழை", pestAttack: "பூச்சி தாக்குதல்", diseaseOutbreak: "நோய் தாக்குதல்", estimatedLoss: "பாதிக்கப்பட்ட பரப்பு", calculatedSubsidy: "கணக்கிடப்பட்ட மானியம்", submitClaim: "மனு தாக்கல் செய்க", suppliesTitle: "தரமான உரங்கள் & விதைகள்", smallFarmerDiscount: "சிறு விவசாயிகள் - 60% மானியம்", orderSuccess: "ஆர்டர் வெற்றி பெற்றது!", logbookTitle: "விவசாய பயண பதிவேடு", logNotice: "ஆதரவு விலை பெற புகைப்பட ஆதாரம் அவசியம்.", addStage: "புதிய பதிவு சேர்க்க", complaintTitle: "குறைதீர்க்கும் மையம்", complaintCat: "புகார் வகை", mandiFraud: "சந்தையில் குறைவான விலை", seedQuality: "போலி விதைகள் / உரம்", waterPower: "பாசன நீர் / மின்சார பிரச்சனை", landDispute: "நில ஆக்கிரமிப்பு", complaintDesc: "பிரச்சனையை விவரிக்கவும்...", raiseTicket: "புகார் பதிவு செய்க", noData: "தகவல் இல்லை.", close: "மூடு" },
+  bn: { appName: "কিসান কানেক্ট", tagline: "কৃষকের পাশে, সমৃদ্ধির দিশায়", langName: "বাংলা", welcome: "স্বাগতম, কৃষক ভাই", voiceAssistant: "ভয়েস গাইডেন্স", searchPlaceholder: "ফসল, বাজার দর, সার, অভিযোগ খুঁজুন...", quickNav: "সমস্ত মূল পরিষেবা একসাথে", cropScanner: "AI ফসল স্বাস্থ্য স্ক্যানার", cropScannerSub: "ছবি তুলে তাৎক্ষণিক রোগ সনাক্তকরণ ও প্রতিকার", assignedCrop: "স্মার্ট ফসল বণ্টন", assignedCropSub: "চাহিদা ও মাটির গুণাগুণ অনুযায়ী ফসল নির্বাচন", landRegistry: "ডিজিটাল জমি রেকর্ড", landRegistrySub: "যাচাইকৃত খতিয়ান ও বিরোধমুক্ত তথ্য", subsidyInsurance: "ফসল বিমা ও ভর্তুকি", subsidyInsuranceSub: "ফসল ক্ষতির দ্রুত ক্ষতিপূরণ দাবি", mrpMarket: "নির্ধারিত সরকারি সহায়ক মূল্য", mrpMarketSub: "গ্যারান্টিযুক্ত মূল্য ও বাজার চাহিদা তথ্য", qualitySupplies: "ভর্তুকিযুক্ত সার ও বীজ", qualitySuppliesSub: "আয় অনুযায়ী সাশ্রয়ী মূল্যে সার ও বীজ", journeyLog: "কৃষি ভ্রমণ লগবুক", journeyLogSub: "রোপণ থেকে ফসল কাটা পর্যন্ত ফটো প্রমাণ", complaints: "কৃষক অভিযোগ প্রতিকার", complaintsSub: "মন্ডি, বিদ্যুৎ বা জলের সমস্যার দ্রুত সমাধান", viewDetails: "বিস্তারিত দেখুন", actionApply: "আবেদন করুন", actionScan: "ফসল স্ক্যান করুন", actionSubmit: "জমা দিন", actionBuy: "অর্ডার করুন", statusVerified: "যাচাইকৃত মালিক", statusPending: "পর্যালোচনাধীন", statusApproved: "অনুমোদিত ও অর্থ প্রেরিত", incomeTier: "আয় স্তর", subsidizedPrice: "ভর্তুকিযুক্ত মূল্য", mrp: "সরকারি সহায়ক মূল্য (MSP)", regionalMandi: "নিকটস্থ মান্ডির দর", liveDemand: "বাজারের চাহিদা", highDemand: "উচ্চ চাহিদা", moderateDemand: "সাধারণ চাহিদা", cropScannerTitle: "AI ফসল রোগ স্ক্যানার", uploadPrompt: "আক্রান্ত পাতার ছবি আপলোড করুন", scanBtnText: "AI দিয়ে ফসল পরীক্ষা করুন", analyzing: "পরীক্ষা করা হচ্ছে...", scanResultHealthy: "ফসলের অবস্থা: সুস্থ (96%)", scanResultIssue: "চিহ্নিত রোগ: পাতা ঝলসানো (Leaf Blight)", remedyTitle: "প্রস্তাবিত প্রতিকার", remedy1: "কপার অক্সিক্লোরাইড ২.৫ গ্রাম/লিটার জলে মিশিয়ে স্প্রে করুন।", remedy2: "জমি থেকে জল নিষ্কাশনের ব্যবস্থা করুন।", assignedCropTitle: "আপনার ফসল পরিকল্পনা (২০২৬)", currentAllocated: "বরাদ্দকৃত ফসল: সয়াবিন", allocationReason: "মাটির গুণমান ও চাহিদার ওপর ভিত্তি করে নির্বাচিত।", marketGuarantee: "সরকারি ক্রয় মূল্য: ₹৫,১২০ / কুইন্টাল", nextShuffle: "পরবর্তী ফসল পরিবর্তন: ১১০ দিনে", landRegistryTitle: "ডিজিটাল জমি মালিকানা রেকর্ড", parcelId: "দাগ / খতিয়ান নম্বর", ownerName: "জমির মালিক", areaAcres: "মোট পরিমাণ (একর)", gpsCoords: "GPS অবস্থান", disputeStatus: "বিরোধের স্থিতি", viewMap: "মানচিত্র দেখুন", subsidyTitle: "ফসল ক্ষতিপূরণ ভর্তুকি", claimReason: "ক্ষতির কারণ", drought: "খরা / বৃষ্টির অভাব", unseasonalRain: "অসময়ে বৃষ্টি / শিলাবৃষ্টি", pestAttack: "পোকার আক্রমণ", diseaseOutbreak: "রোগের প্রাদুর্ভাব", estimatedLoss: "ক্ষতিগ্রস্ত এলাকা", calculatedSubsidy: "আনুমানিক ভর্তুকি", submitClaim: "দাবি পেশ করুন", suppliesTitle: "মানসম্পন্ন সার ও বীজ পোর্টাল", smallFarmerDiscount: "ক্ষুদ্র কৃষক - ৬০% ভর্তুকি প্রযোজ্য", orderSuccess: "অর্ডার সফল হয়েছে!", logbookTitle: "কৃষি ভ্রমণ লগবুক", logNotice: "সহায়ক মূল্য ও বিমার জন্য ফটো প্রমাণ বাধ্যতামূলক।", addStage: "নতুন তথ্য যোগ করুন", complaintTitle: "অভিযোগ প্রতিকার কেন্দ্র", complaintCat: "অভিযোগের ধরন", mandiFraud: "মান্ডিতে কম দাম / মধ্যস্বত্বভোগী", seedQuality: "ভেজাল বীজ বা সার", waterPower: "সেচ বা বিদ্যুৎ সমস্যা", landDispute: "জমি দখল বা সীমানা বিরোধ", complaintDesc: "সমস্যা বিস্তারিত লিখুন...", raiseTicket: "অভিযোগ দায়ের করুন", noData: "কোন তথ্য পাওয়া যায়নি।", close: "বন্ধ করুন" },
+  gu: { appName: "કિસાન કનેક્ટ", tagline: "દરેક ખેડૂતનો સાચો સાથી", langName: "ગુજરાતી", welcome: "સ્વાગત છે, ખેડૂત મિત્ર", voiceAssistant: "વોઈસ માર્ગદર્શન", searchPlaceholder: "પાક, મંડી ભાવ, ખાતર, ફરિયાદ શોધો...", quickNav: "તમામ સેવાઓ એક જ જગ્યાએ", cropScanner: "AI પાક તંદુરસ્તી સ્કેનર", cropScannerSub: "ફોટો દ્વારા રોગની ત્વરિત ઓળખ અને ઉપચાર", assignedCrop: "સ્માર્ટ પાક આયોજન", assignedCropSub: "જમીન અને માંગ મુજબ પાકની ફાળવણી", landRegistry: "ડિજિટલ જમીન રેકોર્ડ", landRegistrySub: "ચકાસાયેલ ખાતા નંબર અને વિવાદ મુક્ત માહિતી", subsidyInsurance: "પાક વીમો અને સબસીડી", subsidyInsuranceSub: "પાક નુકસાની પર ત્વરિત વળતર", mrpMarket: "નિશ્ચિત ટેકાના ભાવ (MSP)", mrpMarketSub: "ગેરંટીડ ભાવ અને બજાર માંગની માહિતી", qualitySupplies: "સબસીડીયુક્ત ખાતર અને બિયારણ", qualitySuppliesSub: "આવક મુજબ રાહત દરે બિયારણ અને યુરિયા", journeyLog: "ખેતી પ્રવાસ લોગબુક", journeyLogSub: "વાવેતરથી લણણી સુધીના ફોટો પુરાવા", complaints: "ખેડૂત ફરિયાદ નિવારણ", complaintsSub: "મંડી, વીજળી કે ખાતરની સમસ્યાની સુનાવણી", viewDetails: "વિગત જુઓ", actionApply: "અરજી કરો", actionScan: "પાક ફોટો સ્કેન કરો", actionSubmit: "જમા કરો", actionBuy: "ઓર્ડર કરો", statusVerified: "ચકાસાયેલ માલિક", statusPending: "તપાસ ચાલુ છે", statusApproved: "મંજૂર અને નાણાં જમા", incomeTier: "આવક વર્ગ", subsidizedPrice: "રાહત દર", mrp: "સરકારી ટેકાનો ભાવ (MSP)", regionalMandi: "નજીકની મંડીનો ભાવ", liveDemand: "બજાર માંગ", highDemand: "વધારે માંગ", moderateDemand: "સામાન્ય માંગ", cropScannerTitle: "AI પાક રોગ સ્કેનર", uploadPrompt: "બગડેલા પાંદડાનો ફોટો અપલોડ કરો", scanBtnText: "AI વડે પાકની તપાસ કરો", analyzing: "તપાસ થઈ રહી છે...", scanResultHealthy: "પાક સ્થિતિ: તંદુરસ્ત (96%)", scanResultIssue: "ઓળખાયેલ રોગ: પાનનો સુકારો (Leaf Blight)", remedyTitle: "સુચવેલ ઉપચાર", remedy1: "કોપર ઓક્સીક્લોરાઈડ ૨.૫ ગ્રામ/લીટર પાણીમાં ભેળવી છંટકાવ કરો.", remedy2: "ખેતરમાં પાણી ભરાઈ ન રહેવા દો.", assignedCropTitle: "તમારી પાક યોજના (૨૦૨૬)", currentAllocated: "ફાળવેલ પાક: સોયાબીન", allocationReason: "જમીનની ગુણવત્તા અને બજાર માંગ મુજબ પસંદગી.", marketGuarantee: "સરકારી ખરીદ ટેકાનો ભાવ: ₹૫,૧૨૦ / ક્વિન્ટલ", nextShuffle: "આગામી પાક ફેરબદલ: ૧૧૦ દિવસમાં", landRegistryTitle: "ડિજિટલ જમીન માલિકી રેકોર્ડ", parcelId: "ખેતર / સર્વે નંબર", ownerName: "જમીન માલિક", areaAcres: "કુલ ક્ષેત્રફળ (એકર)", gpsCoords: "GPS લોકેશન", disputeStatus: "વિવાદ સ્થિતિ", viewMap: "નકશો જુઓ", subsidyTitle: "પાક નુકસાની વળતર સબસીડી", claimReason: "નુકસાનનું કારણ", drought: "દુષ્કાળ / વરસાદની ખેંચ", unseasonalRain: "કમોસમી વરસાદ / કરા", pestAttack: "જીવાતનો ઉપદ્રવ", diseaseOutbreak: "રોગચાળો", estimatedLoss: "નુકસાનગ્રસ્ત વિસ્તાર", calculatedSubsidy: "અંદાજિત સબસીડી રકમ", submitClaim: "દાવો નોંધાવો", suppliesTitle: "ગુણવત્તાયુક્ત બિયારણ અને ખાતર", smallFarmerDiscount: "નાના ખેડૂતો - ૬૦% સબસીડી લાગુ", orderSuccess: "ઓર્ડર સફળતાપૂર્વક નોંધાયો!", logbookTitle: "ખેતી પ્રવાસ લોગબુક", logNotice: "ટેકાના ભાવ અને વીમા માટે ફોટો પુરાવો જરૂરી છે.", addStage: "નવો તબક્કો ઉમેરો", complaintTitle: "ફરિયાદ નિવારણ કેન્દ્ર", complaintCat: "ફરિયાદનો પ્રકાર", mandiFraud: "મંડીમાં ઓછા ભાવ / વચેટિયા", seedQuality: "નકલી બિયારણ / ખાતર", waterPower: "સિંચાઈ / વીજળી સમસ્યા", landDispute: "જમીન દબાણ / સરહદ વિવાદ", complaintDesc: "સમસ્યા વિગતે લખો...", raiseTicket: "ફરિયાદ નોંધી ટોકન મેળવો", noData: "કોઈ માહિતી મળી નથી.", close: "બંધ કરો" },
+  kn: { appName: "ಕಿಸಾನ್ ಕನೆಕ್ಟ್", tagline: "ಪ್ರತಿಯೊಬ್ಬ ರೈತನ ನೆಚ್ಚಿನ ಸಂಗಾತಿ", langName: "ಕನ್ನಡ", welcome: "ಸ್ವಾಗತ, ರೈತ ಬಂಧು", voiceAssistant: "ಧ್ವನಿ ಮಾರ್ಗದರ್ಶನ", searchPlaceholder: "ಬೆಳೆಗಳು, ಮಾರುಕಟ್ಟೆ ದರ, ರಸಗೊಬ್ಬರ...", quickNav: "ಎಲ್ಲಾ ಸೇವೆಗಳು ನಿಮ್ಮ ಬೆರಳ ತುದಿಯಲ್ಲಿ", cropScanner: "AI ಬೆಳೆ ಆರೋಗ್ಯ ಸ್ಕ್ಯಾನರ್", cropScannerSub: "ಫೋಟೋ ಮೂಲಕ ರೋಗ ಪತ್ತೆ ಮತ್ತು ಪರಿಹಾರ", assignedCrop: "ಸ್ಮಾರ್ಟ್ ಬೆಳೆ ಯೋಜನೆ", assignedCropSub: "ಬೇಡಿಕೆ ಮತ್ತು ಮಣ್ಣಿನ ಗುಣಮಟ್ಟಕ್ಕೆ ತಕ್ಕಂತೆ ಬೆಳೆ", landRegistry: "ಡಿಜಿಟಲ್ ಭೂ ದಾಖಲೆ", landRegistrySub: "ಖಾತಾ ಸಂಖ್ಯೆ ಮತ್ತು ವಿವಾದ ರಹಿತ ದೃಢೀಕರಣ", subsidyInsurance: "ಬೆಳೆ ವಿಮೆ ಮತ್ತು ಪರಿಹಾರ subsidy", subsidyInsuranceSub: "ಬೆಳೆ ನಷ್ಟಕ್ಕೆ ತಕ್ಷಣದ ನಷ್ಟಪರಿಹಾರ", mrpMarket: "ಸರ್ಕಾರಿ ಕನಿಷ್ಠ ಬೆಂಬಲ ಬೆಲೆ (MSP)", mrpMarketSub: "ಖಾತರಿ ಬೆಲೆ ಮತ್ತು ಮಾರುಕಟ್ಟೆ ಮಾಹಿತಿ", qualitySupplies: "ಸಬ್ಸಿಡಿ ರಸಗೊಬ್ಬರ ಮತ್ತು ಬಿತ್ತನೆ ಬೀಜ", qualitySuppliesSub: "ಆದಾಯದ ಆಧಾರದ ಮೇಲೆ ರಿಯಾಯಿತಿ ದರ", journeyLog: "ವ್ಯವಸಾಯ ಪ್ರಗತಿ ಡೈರಿ", journeyLogSub: "ಬಿತ್ತನೆಯಿಂದ ಕೊಯ್ಲಿನವರೆಗೆ ಫೋಟೋ ಸಾಕ್ಷಿ", complaints: "ರೈತರ ಕುಂದುಕೊರತೆ ಪರಿಹಾರ", complaintsSub: "ಮಾರುಕಟ್ಟೆ, ನೀರು, ವಿದ್ಯುತ್ ದೂರು ಸ್ವೀಕಾರ", viewDetails: "ವಿವರ ವೀಕ್ಷಿಸಿ", actionApply: "ಅರ್ಜಿ ಸಲ್ಲಿಸಿ", actionScan: "ಫೋಟೋ ಸ್ಕ್ಯಾನ್ ಮಾಡಿ", actionSubmit: "ಸಲ್ಲಿಸಿ", actionBuy: "ಆರ್ಡರ್ ಮಾಡಿ", statusVerified: "ದೃಢೀಕರಿಸಲ್ಪಟ್ಟ ಮಾಲೀಕರು", statusPending: "ಪರಿಶೀಲನೆಯಲ್ಲಿದೆ", statusApproved: "ಅನುಮೋದಿಸಲಾಗಿದೆ", incomeTier: "ಆದಾಯದ ಹಂತ", subsidizedPrice: "ಸಬ್ಸಿಡಿ ದರ", mrp: "ಸರ್ಕಾರಿ ಬೆಂಬಲ ಬೆಲೆ (MSP)", regionalMandi: "ಹತ್ತಿರದ ಮಾರುಕಟ್ಟೆ ದರ", liveDemand: "ಮಾರುಕಟ್ಟೆ ಬೇಡಿಕೆ", highDemand: "ಹೆಚ್ಚಿನ ಬೇಡಿಕೆ", moderateDemand: "ಸಾಧಾರಣ ಬೇಡಿಕೆ", cropScannerTitle: "AI ಬೆಳೆ ರೋಗ ಸ್ಕ್ಯಾನರ್", uploadPrompt: "ರೋಗಪೀಡಿತ ಎಲೆಯ ಫೋಟೋ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ", scanBtnText: "AI ಮೂಲಕ ಪರೀಕ್ಷಿಸಿ", analyzing: "ವಿಶ್ಲೇಷಿಸಲಾಗುತ್ತಿದೆ...", scanResultHealthy: "ಬೆಳೆ ಸ್ಥಿತಿ: ಆರೋಗ್ಯಕರ (96%)", scanResultIssue: "ಪತ್ತೆಯಾದ ರೋಗ: ಎಲೆ ಚುಕ್ಕೆ ರೋಗ", remedyTitle: "ಸೂಚಿಸಿದ ಪರಿಹಾರಗಳು", remedy1: "ಕಾಪರ್ ಆಕ್ಸಿಕ್ಲೋರೈಡ್ 2.5 ಗ್ರಾಂ/ಲೀಟರ್ ನೀರಿಗೆ ಬೆರೆಸಿ ಸಿಂಪಡಿಸಿ.", remedy2: "ಜಮೀನಿನಲ್ಲಿ ನೀರು ನಿಲ್ಲದಂತೆ ನೋಡಿಕೊಳ್ಳಿ.", assignedCropTitle: "ನಿಮ್ಮ ಬೆಳೆ ಯೋಜನೆ (2026)", currentAllocated: "ನಿಯೋಜಿತ ಬೆಳೆ: ಸೋಯಾಬೀನ್", allocationReason: "ಮಣ್ಣಿನ ಗುಣಮಟ್ಟ ಮತ್ತು ಮಾರುಕಟ್ಟೆ ಬೇಡಿಕೆಗೆ ತಕ್ಕಂತೆ ಆಯ್ಕೆ ಮಾಡಲಾಗಿದೆ.", marketGuarantee: "ಸರ್ಕಾರಿ ಖರೀದಿ ಬೆಂಬಲ ಬೆಲೆ: ₹5,120 / ಕ್ವಿಂಟಾಲ್", nextShuffle: "ಮುಂದಿನ ಬೆಳೆ ಬದಲಾವಣೆ: 110 ದಿನಗಳಲ್ಲಿ", landRegistryTitle: "ಡಿಜಿಟಲ್ ಭೂ ಮಾಲೀಕತ್ವ ದಾಖಲೆ", parcelId: "ಸರ್ವೇ / ಖಾತಾ ಸಂಖ್ಯೆ", ownerName: "ಭೂ ಮಾಲೀಕರು", areaAcres: "ಒಟ್ಟು ವಿಸ್ತೀರ್ಣ (ಎಕರೆ)", gpsCoords: "GPS ಸ್ಥಳ", disputeStatus: "ವಿವಾದದ ಸ್ಥಿತಿ", viewMap: "ನಕ್ಷೆ ವೀಕ್ಷಿಸಿ", subsidyTitle: "ಬೆಳೆ ನಷ್ಟ ಪರಿಹಾರ ಸಬ್ಸಿಡಿ", claimReason: "ನಷ್ಟಕ್ಕೆ ಕಾರಣ", drought: "ಬರಗಾಲ / ಮಳೆ ಅಭಾವ", unseasonalRain: "ಅಕಾಲಿಕ ಮಳೆ / ಆಲಿಕಲ್ಲು ಮಳೆ", pestAttack: "ಕೀಟಗಳ ದಾಳಿ", diseaseOutbreak: "ರೋಗ ಬಾಧೆ", estimatedLoss: "ನಷ್ಟವಾದ ವಿಸ್ತೀರ್ಣ", calculatedSubsidy: "ಅಂದಾಜು ಪರಿಹಾರ ಮೊತ್ತ", submitClaim: "ಕ್ಲೇಮ್ ಸಲ್ಲಿಸಿ", suppliesTitle: "ಗುಣಮಟ್ಟದ ಬೀಜ ಮತ್ತು ರಸಗೊಬ್ಬರ", smallFarmerDiscount: "ಸಣ್ಣ ರೈತರು - 60% ಸಬ್ಸಿಡಿ ಅನ್ವಯಿಸುತ್ತದೆ", orderSuccess: "ಆರ್ಡರ್ ಯಶಸ್ವಿಯಾಗಿದೆ!", logbookTitle: "ವ್ಯವಸಾಯ ಪ್ರಗತಿ ಡೈರಿ", logNotice: "ಬೆಂಬಲ ಬೆಲೆ ಮತ್ತು ವಿಮೆಗೆ ಫೋಟೋ ಸಾಕ್ಷಿ ಕಡ್ಡಾಯವಾಗಿದೆ.", addStage: "ಹೊಸ ದಾಖಲೆ ಸೇರಿಸಿ", complaintTitle: "ರೈತರ ಕುಂದುಕೊರತೆ ಪರಿಹಾರ", complaintCat: "ದೂರಿನ ವರ್ಗ", mandiFraud: "ಮಾರುಕಟ್ಟೆಯಲ್ಲಿ ಕಡಿಮೆ ಬೆಲೆ / ಮಧ್ಯವರ್ತಿಗಳು", seedQuality: "ನಕಲಿ ಬೀಜ / ಕಳಪೆ ಗೊಬ್ಬರ", waterPower: "ನೀರಾವರಿ / ವಿದ್ಯುತ್ ತೊಂದರೆ", landDispute: "ಭೂ ಒತ್ತುವರಿ / ಗಡಿ ವಿವಾದ", complaintDesc: "ನಿಮ್ಮ ಸಮಸ್ಯೆಯನ್ನು ವಿವರಿಸಿ...", raiseTicket: "ದೂರು ನೋಂದಾಯಿಸಿ", noData: "ಯಾವುದೇ ಮಾಹಿತಿ ಲಭ್ಯವಿಲ್ಲ.", close: "ಮುಚ್ಚಿ" }
+};
+
+// ==========================================
+// MOCK DATA STORES
+// ==========================================
+const INITIAL_LAND_RECORDS = [
+  { id: "LND-2026-981", surveyNo: "84/2B", owner: "Ramesh Sharma", acres: 4.5, village: "Narela, North Delhi", gps: "28.8523° N, 77.0931° E", status: "Verified & Dispute Free", state: "Delhi" },
+  { id: "LND-2026-442", surveyNo: "112/A", owner: "Sukhwinder Singh", acres: 8.0, village: "Moga, Punjab", gps: "30.8165° N, 75.1717° E", status: "Verified & Dispute Free", state: "Punjab" },
+];
+
+const INITIAL_MANDI_RATES = [
+  { crop: "Soyabean (Yellow)", msp: 4892, regionalMandi: 5120, demand: "High", trend: "+4.2%", district: "Indore Mandi" },
+  { crop: "Wheat (Sharbati)", msp: 2275, regionalMandi: 2450, demand: "Moderate", trend: "+1.5%", district: "Karnal Mandi" },
+  { crop: "Paddy (Basmati 1121)", msp: 2183, regionalMandi: 3850, demand: "High", trend: "+6.1%", district: "Amritsar Mandi" },
+  { crop: "Mustard (Black)", msp: 5650, regionalMandi: 5800, demand: "High", trend: "+2.8%", district: "Bharatpur Mandi" },
+  { crop: "Cotton (Long Staple)", msp: 7020, regionalMandi: 7250, demand: "Moderate", trend: "-0.5%", district: "Rajkot Mandi" },
+];
+
+const INITIAL_SUPPLIES = [
+  { id: 1, name: "Neem Coated Urea (45kg)", category: "Fertilizer", regularPrice: 300, subsidizedPrice: 120, tag: "Government Subsidized", stock: "In Stock" },
+  { id: 2, name: "DAP (Di-Ammonium Phosphate 50kg)", category: "Fertilizer", regularPrice: 1350, subsidizedPrice: 650, tag: "Soil Nutrient Tier A", stock: "In Stock" },
+  { id: 3, name: "Certified High-Yield Soyabean JS-335 Seeds (30kg)", category: "Seeds", regularPrice: 2800, subsidizedPrice: 1100, tag: "100% Germination Guarantee", stock: "Limited Stock" },
+  { id: 4, name: "Bio-NPK Liquid Biofertilizer (1L)", category: "Bio-Agri", regularPrice: 450, subsidizedPrice: 180, tag: "Eco-Friendly Organic", stock: "In Stock" },
+];
+
+const INITIAL_LOGBOOK = [
+  { id: 1, date: "2026-02-10", stage: "Land Preparation & Deep Plowing", notes: "Rotavator & leveling done. Added 4 trolleys of vermicompost.", photoUrl: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400&auto=format&fit=crop&q=60", status: "Verified by Agri Officer" },
+  { id: 2, date: "2026-02-25", stage: "Seed Sowing & Bio-treatment", notes: "JS-335 seeds treated with Trichoderma before line sowing.", photoUrl: "https://images.unsplash.com/photo-1592982537447-7440770cbfc9?w=400&auto=format&fit=crop&q=60", status: "Verified by AI System" },
+];
+
+const INITIAL_COMPLAINTS = [
+  { id: "TKT-8821", date: "2026-03-01", category: "Mandi Price Dispute", description: "Trader offered ₹300 below fixed MSP for wheat despite A-grade moisture test.", status: "In Investigation", priority: "High" }
+];
+
+export default function App() {
+  // App States
+  const [lang, setLang] = useState('en');
+  const [activeTab, setActiveTab] = useState('home'); // home, scanner, cropPlan, land, subsidy, market, supplies, logbook, complaints
+  const [activeModal, setActiveModal] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  
+  // Feature Specific States
+  const [farmerProfile, setFarmerProfile] = useState({
+    name: "Ramesh Sharma",
+    phone: "+91 98765 43210",
+    state: "Madhya Pradesh",
+    district: "Ujjain",
+    incomeBracket: "Below ₹1.5 Lakhs/yr (Small Farmer)",
+    landSize: "4.5 Acres",
+    assignedCrop: "Yellow Soyabean (JS 335)"
+  });
+
+  const [voiceSpeaking, setVoiceSpeaking] = useState(false);
+  
+  // Crop Scanner State
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [scanResult, setScanResult] = useState(null);
+
+  // Subsidy Claim Form
+  const [subsidyForm, setSubsidyForm] = useState({
+    reason: 'Unseasonal Rain / Hailstorm',
+    acresDamaged: '2.5',
+    dateOfLoss: '2026-03-10',
+    notes: 'Sudden hailstorm caused 60% pod shattering in ready crop.'
+  });
+  const [submittedClaims, setSubmittedClaims] = useState([]);
+
+  // Store & Orders
+  const [cart, setCart] = useState([]);
+  const [orders, setOrders] = useState([]);
+  const [orderNotification, setOrderNotification] = useState(null);
+
+  // Logbook State
+  const [logs, setLogs] = useState(INITIAL_LOGBOOK);
+  const [newLog, setNewLog] = useState({ stage: 'First Irrigation & Weeding', notes: '', photo: null });
+
+  // Complaints State
+  const [complaintsList, setComplaintsList] = useState(INITIAL_COMPLAINTS);
+  const [newComplaint, setNewComplaint] = useState({ category: 'Mandi Price Dispute', description: '' });
+
+  const t = TRANSLATIONS[lang] || TRANSLATIONS.en;
+
+  // Web Speech API Integration for Voice Assistant
+  const handleVoiceAssistant = () => {
+    if ('speechSynthesis' in window) {
+      if (voiceSpeaking) {
+        window.speechSynthesis.cancel();
+        setVoiceSpeaking(false);
+        return;
+      }
+      setVoiceSpeaking(true);
+      const textToRead = `${t.welcome}. ${t.appName} - ${t.tagline}. ${t.speakText}`;
+      const utterance = new SpeechSynthesisUtterance(textToRead);
+      utterance.rate = 0.9;
+      // Select appropriate language voice if available
+      const voices = window.speechSynthesis.getVoices();
+      const langVoice = voices.find(v => v.lang.startsWith(lang));
+      if (langVoice) utterance.voice = langVoice;
+      
+      utterance.onend = () => setVoiceSpeaking(false);
+      utterance.onerror = () => setVoiceSpeaking(false);
+      window.speechSynthesis.speak(utterance);
+    } else {
+      alert("Voice speech synthesis is not supported on this device browser.");
+    }
+  };
+
+  // Crop Disease AI Scanner Logic
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setSelectedImage(reader.result);
+        setScanResult(null);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const runAIScan = () => {
+    if (!selectedImage) return;
+    setIsAnalyzing(true);
+    
+    // Simulate AI Vision Analysis delay
+    setTimeout(() => {
+      setIsAnalyzing(false);
+      setScanResult({
+        disease: t.scanResultIssue,
+        confidence: "94.8%",
+        severity: "Moderate (Action Required within 48 hrs)",
+        remedies: [t.remedy1, t.remedy2],
+        recommendedPesticide: "Chlorothalonil 75% WP @ 2g/L",
+        governmentSubsidyAvailable: "50% off on approved fungicides at Kisan Kendra"
+      });
+    }, 2200);
+  };
+
+  // Submit Subsidy Claim
+  const handleSubsidySubmit = (e) => {
+    e.preventDefault();
+    const calculatedAmount = parseFloat(subsidyForm.acresDamaged || 1) * 12500;
+    const newClaim = {
+      id: `SUB-2026-${Math.floor(1000 + Math.random() * 9000)}`,
+      date: new Date().toISOString().split('T')[0],
+      reason: subsidyForm.reason,
+      acres: subsidyForm.acresDamaged,
+      amount: calculatedAmount,
+      status: t.statusPending
+    };
+    setSubmittedClaims([newClaim, ...submittedClaims]);
+    setActiveModal(null);
+    alert(`Claim filed successfully! Reference ID: ${newClaim.id}. Estimated fair payout: ₹${calculatedAmount.toLocaleString('en-IN')}`);
+  };
+
+  // Order Supply Item
+  const handleBuySupply = (item) => {
+    const orderRef = `ORD-${Math.floor(100000 + Math.random() * 900000)}`;
+    const newOrd = {
+      id: orderRef,
+      item: item.name,
+      amount: item.subsidizedPrice,
+      date: new Date().toLocaleDateString(),
+      status: "Dispatched to Local Agriculture Center"
+    };
+    setOrders([newOrd, ...orders]);
+    setOrderNotification(`${t.orderSuccess} ID: ${orderRef}`);
+    setTimeout(() => setOrderNotification(null), 5000);
+  };
+
+  // Submit Farming Log
+  const handleAddLog = (e) => {
+    e.preventDefault();
+    if (!newLog.notes) return;
+    const logItem = {
+      id: Date.now(),
+      date: new Date().toISOString().split('T')[0],
+      stage: newLog.stage,
+      notes: newLog.notes,
+      photoUrl: selectedImage || "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400&auto=format&fit=crop&q=60",
+      status: "Under AI Integrity Verification"
+    };
+    setLogs([logItem, ...logs]);
+    setNewLog({ stage: 'First Irrigation & Weeding', notes: '', photo: null });
+    setSelectedImage(null);
+    setActiveModal(null);
+  };
+
+  // Register Complaint
+  const handleRegisterComplaint = (e) => {
+    e.preventDefault();
+    if (!newComplaint.description) return;
+    const ticket = {
+      id: `TKT-${Math.floor(1000 + Math.random() * 9000)}`,
+      date: new Date().toISOString().split('T')[0],
+      category: newComplaint.category,
+      description: newComplaint.description,
+      status: "Ticket Registered - Escalated to District Officer",
+      priority: "High"
+    };
+    setComplaintsList([ticket, ...complaintsList]);
+    setNewComplaint({ category: 'Mandi Price Dispute', description: '' });
+    setActiveModal(null);
+  };
+
+  return (
+    <div className="min-h-screen bg-emerald-50/50 text-slate-800 font-sans pb-24 md:pb-10">
+      
+      {/* ================= HEADER & TOP BAR ================= */}
+      <header className="sticky top-0 z-40 bg-emerald-800 text-white shadow-md border-b border-emerald-900">
+        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-2">
+          
+          {/* Logo & Branding */}
+          <div className="flex items-center gap-3 cursor-pointer" onClick={() => setActiveTab('home')}>
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-400 to-emerald-400 flex items-center justify-center text-emerald-950 font-black shadow-inner">
+              <Leaf className="w-6 h-6 stroke-[2.5]" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold leading-tight tracking-wide flex items-center gap-1.5">
+                {t.appName}
+                <span className="text-[10px] bg-emerald-600 border border-emerald-400/30 px-1.5 py-0.5 rounded text-emerald-100 font-semibold uppercase">Official</span>
+              </h1>
+              <p className="text-xs text-emerald-200 hidden sm:block">{t.tagline}</p>
+            </div>
+          </div>
+
+          {/* Controls: Audio Reader + Multi-language Switcher */}
+          <div className="flex items-center gap-2">
+            
+            {/* Audio Reader Assistant */}
+            <button
+              onClick={handleVoiceAssistant}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
+                voiceSpeaking 
+                  ? 'bg-amber-400 text-emerald-950 animate-pulse ring-2 ring-amber-300' 
+                  : 'bg-emerald-700 hover:bg-emerald-600 text-emerald-100'
+              }`}
+              title="Click to hear page contents in your language"
+            >
+              <Volume2 className="w-4 h-4" />
+              <span className="hidden md:inline">{t.voiceAssistant}</span>
+            </button>
+
+            {/* Language Switcher Dropdown */}
+            <div className="relative flex items-center bg-emerald-900 border border-emerald-700 rounded-lg px-2 py-1 text-xs">
+              <Globe className="w-4 h-4 text-emerald-300 mr-1.5 shrink-0" />
+              <select
+                value={lang}
+                onChange={(e) => setLang(e.target.value)}
+                className="bg-transparent text-white font-medium focus:outline-none cursor-pointer pr-2"
+              >
+                {Object.keys(TRANSLATIONS).map((code) => (
+                  <option key={code} value={code} className="bg-emerald-900 text-white">
+                    {TRANSLATIONS[code].langName}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+          </div>
+        </div>
+
+        {/* Global Search Bar & Quick Ticker */}
+        <div className="bg-emerald-900/80 px-4 py-2 border-t border-emerald-800/80">
+          <div className="max-w-7xl mx-auto flex items-center gap-3">
+            <div className="relative flex-1">
+              <Search className="w-4 h-4 absolute left-3 top-2.5 text-emerald-300" />
+              <input
+                type="text"
+                placeholder={t.searchPlaceholder}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-emerald-950/60 text-white placeholder-emerald-300/70 text-xs sm:text-sm pl-9 pr-4 py-1.5 rounded-lg border border-emerald-700/60 focus:outline-none focus:border-amber-400"
+              />
+            </div>
+            <div className="hidden lg:flex items-center gap-2 text-xs text-amber-300 bg-emerald-950/80 px-3 py-1.5 rounded-lg border border-emerald-800">
+              <TrendingUp className="w-3.5 h-3.5 text-amber-400" />
+              <span>Today MSP Mandi Avg: Soyabean ₹5,120/qtn (+4%)</span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* ================= NOTIFICATION ALERT ================= */}
+      {orderNotification && (
+        <div className="bg-emerald-600 text-white px-4 py-2 text-center text-sm font-medium flex items-center justify-center gap-2 shadow-inner animate-bounce">
+          <CheckCircle2 className="w-4 h-4" />
+          <span>{orderNotification}</span>
+        </div>
+      )}
+
+      {/* ================= MAIN CONTAINER ================= */}
+      <main className="max-w-7xl mx-auto px-3 sm:px-6 py-6">
+
+        {/* PROFILE SUMMARY BAR */}
+        <div className="mb-6 bg-white rounded-2xl p-4 shadow-sm border border-emerald-100 flex flex-wrap items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-full bg-amber-100 text-amber-800 flex items-center justify-center font-bold text-lg border-2 border-amber-300">
+              <User className="w-6 h-6" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h2 className="font-bold text-slate-800 text-base">{farmerProfile.name}</h2>
+                <span className="text-[11px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-semibold flex items-center gap-1">
+                  <ShieldCheck className="w-3 h-3 text-emerald-600" /> Aadhaar Verified
+                </span>
+              </div>
+              <p className="text-xs text-slate-500">
+                {farmerProfile.district}, {farmerProfile.state} | Land: <span className="font-semibold text-slate-700">{farmerProfile.landSize}</span>
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 text-xs">
+            <div className="bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-xl">
+              <span className="text-slate-500 block text-[10px] uppercase font-bold">{t.incomeTier}</span>
+              <span className="font-bold text-emerald-900">{farmerProfile.incomeBracket}</span>
+            </div>
+            <div className="bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-xl">
+              <span className="text-slate-500 block text-[10px] uppercase font-bold">Assigned Crop</span>
+              <span className="font-bold text-amber-900">{farmerProfile.assignedCrop}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* BREADCRUMB / NAV BACK */}
+        {activeTab !== 'home' && (
+          <button 
+            onClick={() => setActiveTab('home')}
+            className="mb-4 inline-flex items-center gap-1 text-xs font-bold text-emerald-800 hover:text-emerald-950 bg-emerald-100/60 px-3 py-1.5 rounded-lg"
+          >
+            ← Back to All Services
+          </button>
+        )}
+
+        {/* ================= DASHBOARD GRID (ALL FEATURES ACCESS ON HOME) ================= */}
+        {activeTab === 'home' && (
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h2 className="text-lg font-extrabold text-slate-900 flex items-center gap-2">
+                  <Layers className="w-5 h-5 text-emerald-700" />
+                  {t.quickNav}
+                </h2>
+                <p className="text-xs text-slate-500">Directly tap any agricultural service below</p>
+              </div>
+              <span className="text-xs bg-emerald-100 text-emerald-800 font-bold px-2.5 py-1 rounded-full">
+                9 Core Modules
+              </span>
+            </div>
+
+            {/* MAIN 9 FEATURE TILES GRID */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              
+              {/* 1. AI Crop Health Scanner */}
+              <div 
+                onClick={() => setActiveTab('scanner')}
+                className="bg-gradient-to-br from-emerald-600 to-teal-700 text-white rounded-2xl p-5 shadow-sm hover:shadow-md transition-all cursor-pointer border border-emerald-500 group relative overflow-hidden"
+              >
+                <div className="absolute right-[-10px] bottom-[-10px] text-emerald-500/30 group-hover:scale-110 transition-transform">
+                  <Camera className="w-28 h-28" />
+                </div>
+                <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center mb-3 text-amber-300">
+                  <Camera className="w-6 h-6" />
+                </div>
+                <span className="text-[10px] font-bold bg-amber-400 text-slate-900 px-2 py-0.5 rounded-full uppercase">AI Instant Vision</span>
+                <h3 className="font-bold text-base mt-1 text-white">{t.cropScanner}</h3>
+                <p className="text-xs text-emerald-100/90 mt-1 leading-snug">{t.cropScannerSub}</p>
+                <div className="mt-4 flex items-center gap-1 text-xs font-bold text-amber-300 group-hover:translate-x-1 transition-transform">
+                  <span>{t.actionScan}</span>
+                  <ChevronRight className="w-4 h-4" />
+                </div>
+              </div>
+
+              {/* 2. Assigned Crop Plan */}
+              <div 
+                onClick={() => setActiveTab('cropPlan')}
+                className="bg-white rounded-2xl p-5 shadow-sm hover:shadow-md transition-all cursor-pointer border border-emerald-100 hover:border-emerald-300 group"
+              >
+                <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center mb-3">
+                  <Sparkles className="w-6 h-6 text-amber-600" />
+                </div>
+                <span className="text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full uppercase">Rotation & Demand</span>
+                <h3 className="font-bold text-base mt-1 text-slate-800">{t.assignedCrop}</h3>
+                <p className="text-xs text-slate-500 mt-1 leading-snug">{t.assignedCropSub}</p>
+                <div className="mt-4 flex items-center justify-between text-xs font-bold text-emerald-700">
+                  <span>View Allocation details</span>
+                  <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </div>
+              </div>
+
+              {/* 3. Land Registry */}
+              <div 
+                onClick={() => setActiveTab('land')}
+                className="bg-white rounded-2xl p-5 shadow-sm hover:shadow-md transition-all cursor-pointer border border-emerald-100 hover:border-emerald-300 group"
+              >
+                <div className="w-10 h-10 rounded-xl bg-blue-100 text-blue-800 flex items-center justify-center mb-3">
+                  <MapPin className="w-6 h-6 text-blue-600" />
+                </div>
+                <span className="text-[10px] font-bold bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full uppercase">Khasra Digital Ledger</span>
+                <h3 className="font-bold text-base mt-1 text-slate-800">{t.landRegistry}</h3>
+                <p className="text-xs text-slate-500 mt-1 leading-snug">{t.landRegistrySub}</p>
+                <div className="mt-4 flex items-center justify-between text-xs font-bold text-emerald-700">
+                  <span>Verify Land Parcel</span>
+                  <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </div>
+              </div>
+
+              {/* 4. Crop Insurance & Subsidy */}
+              <div 
+                onClick={() => setActiveTab('subsidy')}
+                className="bg-white rounded-2xl p-5 shadow-sm hover:shadow-md transition-all cursor-pointer border border-emerald-100 hover:border-emerald-300 group"
+              >
+                <div className="w-10 h-10 rounded-xl bg-purple-100 text-purple-800 flex items-center justify-center mb-3">
+                  <ShieldCheck className="w-6 h-6 text-purple-600" />
+                </div>
+                <span className="text-[10px] font-bold bg-purple-100 text-purple-800 px-2 py-0.5 rounded-full uppercase">Loss Relief Portal</span>
+                <h3 className="font-bold text-base mt-1 text-slate-800">{t.subsidyInsurance}</h3>
+                <p className="text-xs text-slate-500 mt-1 leading-snug">{t.subsidyInsuranceSub}</p>
+                <div className="mt-4 flex items-center justify-between text-xs font-bold text-emerald-700">
+                  <span>{t.actionApply}</span>
+                  <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </div>
+              </div>
+
+              {/* 5. Fixed Regional MRP & Market Intelligence */}
+              <div 
+                onClick={() => setActiveTab('market')}
+                className="bg-white rounded-2xl p-5 shadow-sm hover:shadow-md transition-all cursor-pointer border border-emerald-100 hover:border-emerald-300 group"
+              >
+                <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center mb-3">
+                  <TrendingUp className="w-6 h-6 text-emerald-600" />
+                </div>
+                <span className="text-[10px] font-bold bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full uppercase">Fixed MRP & Mandi</span>
+                <h3 className="font-bold text-base mt-1 text-slate-800">{t.mrpMarket}</h3>
+                <p className="text-xs text-slate-500 mt-1 leading-snug">{t.mrpMarketSub}</p>
+                <div className="mt-4 flex items-center justify-between text-xs font-bold text-emerald-700">
+                  <span>Check Regional Rates</span>
+                  <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </div>
+              </div>
+
+              {/* 6. Subsidized Quality Supplies Store */}
+              <div 
+                onClick={() => setActiveTab('supplies')}
+                className="bg-white rounded-2xl p-5 shadow-sm hover:shadow-md transition-all cursor-pointer border border-emerald-100 hover:border-emerald-300 group"
+              >
+                <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center mb-3">
+                  <ShoppingBag className="w-6 h-6 text-amber-600" />
+                </div>
+                <span className="text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full uppercase">Income-Tier Prices</span>
+                <h3 className="font-bold text-base mt-1 text-slate-800">{t.qualitySupplies}</h3>
+                <p className="text-xs text-slate-500 mt-1 leading-snug">{t.qualitySuppliesSub}</p>
+                <div className="mt-4 flex items-center justify-between text-xs font-bold text-emerald-700">
+                  <span>Order Seeds & Urea</span>
+                  <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </div>
+              </div>
+
+              {/* 7. Farm Journey Logbook */}
+              <div 
+                onClick={() => setActiveTab('logbook')}
+                className="bg-white rounded-2xl p-5 shadow-sm hover:shadow-md transition-all cursor-pointer border border-emerald-100 hover:border-emerald-300 group"
+              >
+                <div className="w-10 h-10 rounded-xl bg-teal-100 text-teal-800 flex items-center justify-center mb-3">
+                  <FileText className="w-6 h-6 text-teal-600" />
+                </div>
+                <span className="text-[10px] font-bold bg-teal-100 text-teal-800 px-2 py-0.5 rounded-full uppercase">Strict Proof Logging</span>
+                <h3 className="font-bold text-base mt-1 text-slate-800">{t.journeyLog}</h3>
+                <p className="text-xs text-slate-500 mt-1 leading-snug">{t.journeyLogSub}</p>
+                <div className="mt-4 flex items-center justify-between text-xs font-bold text-emerald-700">
+                  <span>View Farm Log</span>
+                  <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </div>
+              </div>
+
+              {/* 8. Grievance & Complaint Portal */}
+              <div 
+                onClick={() => setActiveTab('complaints')}
+                className="bg-white rounded-2xl p-5 shadow-sm hover:shadow-md transition-all cursor-pointer border border-emerald-100 hover:border-emerald-300 group"
+              >
+                <div className="w-10 h-10 rounded-xl bg-red-100 text-red-800 flex items-center justify-center mb-3">
+                  <AlertCircle className="w-6 h-6 text-red-600" />
+                </div>
+                <span className="text-[10px] font-bold bg-red-100 text-red-800 px-2 py-0.5 rounded-full uppercase">Fast Action Portal</span>
+                <h3 className="font-bold text-base mt-1 text-slate-800">{t.complaints}</h3>
+                <p className="text-xs text-slate-500 mt-1 leading-snug">{t.complaintsSub}</p>
+                <div className="mt-4 flex items-center justify-between text-xs font-bold text-emerald-700">
+                  <span>Raise Complaint</span>
+                  <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </div>
+              </div>
+
+              {/* 9. Helpline & Emergency Assistance */}
+              <div 
+                onClick={() => alert("Kisan Direct Helpline: 1800-180-1551 (Toll-Free 24x7 Support Available)")}
+                className="bg-emerald-900 text-white rounded-2xl p-5 shadow-sm hover:shadow-md transition-all cursor-pointer border border-emerald-800 group"
+              >
+                <div className="w-10 h-10 rounded-xl bg-emerald-800 text-amber-300 flex items-center justify-center mb-3">
+                  <PhoneCall className="w-6 h-6" />
+                </div>
+                <span className="text-[10px] font-bold bg-amber-400 text-slate-900 px-2 py-0.5 rounded-full uppercase">24x7 Toll Free</span>
+                <h3 className="font-bold text-base mt-1 text-white">Kisan Call Center Hotline</h3>
+                <p className="text-xs text-emerald-200 mt-1 leading-snug">Speak directly to Senior Agriculture Scientist in your native language.</p>
+                <div className="mt-4 flex items-center gap-2 text-xs font-bold text-amber-300">
+                  <span>Dial 1800-180-1551</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        )}
+
+        {/* ================= MODULE 1: CROP DISEASE SCANNER ================= */}
+        {activeTab === 'scanner' && (
+          <div className="bg-white rounded-2xl p-6 shadow-sm border border-emerald-100 max-w-3xl mx-auto">
+            <div className="flex items-center gap-3 border-b border-slate-100 pb-4 mb-4">
+              <div className="p-3 bg-emerald-100 rounded-xl text-emerald-800">
+                <Camera className="w-6 h-6" />
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-slate-900">{t.cropScannerTitle}</h2>
+                <p className="text-xs text-slate-500">Instant AI diagnosis from photo with organic remedies</p>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              {/* Photo Upload Zone */}
+              <div className="border-2 border-dashed border-emerald-300 rounded-2xl p-6 text-center bg-emerald-50/40 relative">
+                {selectedImage ? (
+                  <div className="relative inline-block">
+                    <img src={selectedImage} alt="Crop sample" className="max-h-64 rounded-xl shadow-md border" />
+                    <button 
+                      onClick={() => setSelectedImage(null)}
+                      className="absolute -top-2 -right-2 bg-red-600 text-white p-1 rounded-full text-xs shadow"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <div>
+                    <Camera className="w-12 h-12 text-emerald-600 mx-auto mb-2" />
+                    <p className="text-sm font-semibold text-slate-700">{t.uploadPrompt}</p>
+                    <p className="text-xs text-slate-400 mt-1">Supports Leaf, Stem, Root photo uploads (JPG, PNG)</p>
+                    <label className="mt-4 inline-flex items-center gap-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold px-4 py-2.5 rounded-xl cursor-pointer shadow-sm">
+                      <Upload className="w-4 h-4" /> Select Crop Photo
+                      <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+                    </label>
+                  </div>
+                )}
+              </div>
+
+              {selectedImage && !scanResult && (
+                <button
+                  onClick={runAIScan}
+                  disabled={isAnalyzing}
+                  className="w-full bg-emerald-700 hover:bg-emerald-800 text-white py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 shadow-sm disabled:opacity-50"
+                >
+                  {isAnalyzing ? (
+                    <>
+                      <RefreshCw className="w-4 h-4 animate-spin" />
+                      <span>{t.analyzing}</span>
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="w-4 h-4 text-amber-300" />
+                      <span>{t.scanBtnText}</span>
+                    </>
+                  )}
+                </button>
+              )}
+
+              {/* AI Scan Diagnosis Output */}
+              {scanResult && (
+                <div className="mt-6 bg-amber-50/80 border border-amber-200 rounded-2xl p-5 space-y-3">
+                  <div className="flex items-center justify-between border-b border-amber-200/80 pb-2">
+                    <span className="text-xs font-bold bg-amber-200 text-amber-900 px-2.5 py-0.5 rounded-full">
+                      AI Diagnosis Result
+                    </span>
+                    <span className="text-xs text-slate-500 font-semibold">Confidence: {scanResult.confidence}</span>
+                  </div>
+
+                  <h3 className="text-base font-bold text-red-800 flex items-center gap-2">
+                    <AlertTriangle className="w-5 h-5 text-red-600" />
+                    {scanResult.disease}
+                  </h3>
+                  <p className="text-xs text-slate-600">Severity Level: <span className="font-bold text-slate-800">{scanResult.severity}</span></p>
+
+                  <div className="bg-white rounded-xl p-3 border border-amber-100">
+                    <h4 className="text-xs font-bold text-slate-800 mb-2 flex items-center gap-1">
+                      <Leaf className="w-4 h-4 text-emerald-600" /> {t.remedyTitle}
+                    </h4>
+                    <ul className="text-xs space-y-1.5 text-slate-700">
+                      {scanResult.remedies.map((rem, idx) => (
+                        <li key={idx} className="flex items-start gap-1.5">
+                          <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                          <span>{rem}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className="bg-emerald-100/60 p-3 rounded-xl text-xs text-emerald-900 flex items-center justify-between">
+                    <div>
+                      <span className="font-bold block">Subsidized Treatment Available</span>
+                      <span>{scanResult.governmentSubsidyAvailable}</span>
+                    </div>
+                    <button onClick={() => setActiveTab('supplies')} className="bg-emerald-800 text-white px-3 py-1.5 rounded-lg text-xs font-bold shrink-0">
+                      Get Fungicide
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* ================= MODULE 2: ASSIGNED CROP ALLOCATION ================= */}
+        {activeTab === 'cropPlan' && (
+          <div className="bg-white rounded-2xl p-6 shadow-sm border border-emerald-100 max-w-3xl mx-auto">
+            <div className="flex items-center gap-3 border-b border-slate-100 pb-4 mb-4">
+              <div className="p-3 bg-amber-100 rounded-xl text-amber-800">
+                <Sparkles className="w-6 h-6" />
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-slate-900">{t.assignedCropTitle}</h2>
+                <p className="text-xs text-slate-500">Automated regional crop shuffling to prevent soil nutrient depletion & market glut</p>
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-br from-emerald-900 to-teal-900 text-white p-5 rounded-2xl mb-5 space-y-3 shadow-md">
+              <span className="text-[10px] font-bold bg-amber-400 text-slate-950 px-2.5 py-0.5 rounded-full uppercase">Official Regional Assignment</span>
+              <h3 className="text-xl font-black text-amber-300">{t.currentAllocated}</h3>
+              <p className="text-xs text-emerald-100 leading-relaxed">{t.allocationReason}</p>
+              
+              <div className="pt-2 border-t border-emerald-700/80 flex flex-wrap items-center justify-between gap-2 text-xs">
+                <span className="bg-emerald-800/80 px-3 py-1 rounded-lg border border-emerald-600 text-amber-200 font-bold">
+                  {t.marketGuarantee}
+                </span>
+                <span className="text-emerald-200">{t.nextShuffle}</span>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <h4 className="font-bold text-sm text-slate-800">Why Crop Allocation Shuffling is Enforced:</h4>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="bg-emerald-50/60 p-3 rounded-xl border border-emerald-100">
+                  <div className="font-bold text-xs text-emerald-900 mb-1">1. Market Glut Prevention</div>
+...
+
+[Message clipped]  View entire message
